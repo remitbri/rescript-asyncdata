@@ -12,7 +12,7 @@ module User = {
     Js.Console.log(`get(${id}): init`)
     let timeoutId = Js.Global.setTimeout(() => {
       Js.Console.log(`get(${id}): receive`)
-      let payload = {id: id, username: `User${id}`, fetchedAt: Js.Date.now()}
+      let payload = {id, username: `User${id}`, fetchedAt: Js.Date.now()}
       cb(Ok(payload))
     }, 1_000)
     Some(
@@ -29,7 +29,7 @@ module User = {
       let payload = Array.range(0, 9)->Array.map(index => {
         let id = ((page - 1) * 10 + index)->Int.toString
         {
-          id: id,
+          id,
           username: `User${id}`,
           fetchedAt: Js.Date.now(),
         }
@@ -54,9 +54,9 @@ module Async = {
       setUser(_ => Loading)
       User.get(id, user => {
         setUser(_ => Done(user))
-      })->Option.map((func, ()) => {
+      })->Option.map(func => {
         setUser(_ => NotAsked)
-        func()
+        func
       })
     }, [id])
 
@@ -86,7 +86,7 @@ module AsyncWithReload = {
         | (NotAsked | Loading, next) => next
         | _ => state.current
         },
-        next: next,
+        next,
       })
     })
 
@@ -96,9 +96,9 @@ module AsyncWithReload = {
         setUser(Loading)
         User.get(id, user => {
           setUser(Done(user))
-        })->Option.map((func, ()) => {
+        })->Option.map(func => {
           setUser(userRollback)
-          func()
+          func
         })
       } else {
         None
@@ -110,7 +110,8 @@ module AsyncWithReload = {
       | NotAsked => React.null
       | Loading => "Loading ..."->React.string
       | Done(Error(_)) => "Error"->React.string
-      | Done(Ok(user)) => <>
+      | Done(Ok(user)) =>
+        <>
           {user.username->React.string}
           <small> {user.fetchedAt->React.float} </small>
           {reloadableUser.next->AsyncData.isLoading ? "Reloading ..."->React.string : React.null}
@@ -124,11 +125,17 @@ module AsyncWithReload = {
 module App = {
   @react.component
   let make = () => {
-    <div> <Async id="1" /> <br /> <AsyncWithReload id="2" /> </div>
+    <div>
+      <Async id="1" />
+      <br />
+      <AsyncWithReload id="2" />
+    </div>
   }
 }
 
 switch ReactDOM.querySelector("#root") {
-| Some(root) => ReactDOM.render(<App />, root)
+| Some(element) =>
+  let root = ReactDOM.Client.createRoot(element)
+  ReactDOM.Client.Root.render(root, <App />)
 | None => ()
 }
