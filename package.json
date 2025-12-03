@@ -17,8 +17,8 @@
     "moduleserve": "^0.9.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "rescript": "12.0.0-alpha.4",
-    "rescript-test": "remitbri/rescript-test.git#alpha4"
+    "rescript": "12.0.0-alpha.5",
+    "rescript-test": "remitbri/rescript-test.git#alpha5"
   },
   "volta": {
     "node": "22.12.0",
