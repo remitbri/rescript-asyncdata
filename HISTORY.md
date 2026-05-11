@@ -1,3 +1,9 @@
+# 5.0.1
+
+Changes
+
+- Prepare for ReScript 13 (460a8c2)
+
 # 5.0.0
 
 Changes:
